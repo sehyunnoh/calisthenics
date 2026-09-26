@@ -10,9 +10,10 @@ interface HomeProps {
   completedToday: boolean
   streak: number
   onStart: () => void
+  onSelectExercise: (exerciseId: string) => void
 }
 
-export default function Home({ routine, difficulty, completedToday, streak, onStart }: HomeProps) {
+export default function Home({ routine, difficulty, completedToday, streak, onStart, onSelectExercise }: HomeProps) {
   const { locale, t } = useLocale()
 
   return (
@@ -26,13 +27,14 @@ export default function Home({ routine, difficulty, completedToday, streak, onSt
         {routine.exercises.map((ref) => {
           const exercise = EXERCISES[ref.exerciseId]
           return (
-            <li key={ref.exerciseId}>
+            <li key={ref.exerciseId} className="exercise-preview-clickable" onClick={() => onSelectExercise(ref.exerciseId)}>
               <span className="exercise-name">{exercise.variants[difficulty][locale]}</span>
               <span className="exercise-meta">{exerciseMetaLabel(locale, ref.sets, ref.workSeconds, ref.restSeconds)}</span>
             </li>
           )
         })}
       </ul>
+      <p className="exercise-hint">{t(UI.home.tapHint)}</p>
 
       <button className="primary-button" onClick={onStart}>
         {completedToday ? t(UI.home.restart) : t(UI.home.start)}

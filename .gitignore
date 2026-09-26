@@ -25,3 +25,6 @@ dist-ssr
 
 # personal planning notes (contains personal health info) - keep local only
 plan.md
+
+# local Claude Code tooling state
+.claude/

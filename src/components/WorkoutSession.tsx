@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Difficulty } from '../data/exercises'
-import { EXERCISES, exerciseVideoUrl } from '../data/exercises'
+import { EXERCISES } from '../data/exercises'
 import type { DayRoutine } from '../data/routines'
 import { useLocale } from '../i18n/locale'
-import { UI, videoLinkLabel } from '../i18n/ui'
+import { UI } from '../i18n/ui'
 import { buildSteps } from '../lib/timerSteps'
 
 interface WorkoutSessionProps {
@@ -11,6 +11,7 @@ interface WorkoutSessionProps {
   difficulty: Difficulty
   onFinish: () => void
   onExit: () => void
+  onShowExercise: (exerciseId: string) => void
 }
 
 function vibrate(pattern: number | number[]) {
@@ -21,7 +22,7 @@ function vibrate(pattern: number | number[]) {
   }
 }
 
-export default function WorkoutSession({ routine, difficulty, onFinish, onExit }: WorkoutSessionProps) {
+export default function WorkoutSession({ routine, difficulty, onFinish, onExit, onShowExercise }: WorkoutSessionProps) {
   const { locale, t } = useLocale()
   const steps = useMemo(() => buildSteps(routine, difficulty, locale), [routine, difficulty, locale])
   const [stepIndex, setStepIndex] = useState(0)
@@ -105,14 +106,9 @@ export default function WorkoutSession({ routine, difficulty, onFinish, onExit }
       </div>
 
       {exercise && (
-        <a
-          className="video-link"
-          href={exerciseVideoUrl(exercise, difficulty, locale)}
-          target="_blank"
-          rel="noreferrer"
-        >
-          {videoLinkLabel(locale, exercise.variants[difficulty][locale])}
-        </a>
+        <button className="video-link" onClick={() => onShowExercise(exercise.id)}>
+          {t(UI.session.viewExercise)}
+        </button>
       )}
 
       <p className="session-progress">

@@ -9,6 +9,10 @@ export const UI = {
       ko: '오늘 운동은 이미 완료했어요. 다시 해도 좋아요 💪',
       en: "You've already completed today's workout. Feel free to go again 💪",
     } as LocalizedText,
+    tapHint: {
+      ko: '동작을 탭하면 영상으로 확인할 수 있어요',
+      en: 'Tap an exercise to watch how it looks',
+    } as LocalizedText,
   },
   record: {
     eyebrow: { ko: '나의 기록', en: 'My Record' } as LocalizedText,
@@ -29,11 +33,25 @@ export const UI = {
     pause: { ko: '⏸ 일시정지', en: '⏸ Pause' } as LocalizedText,
     resume: { ko: '▶ 계속', en: '▶ Resume' } as LocalizedText,
     next: { ko: '다음 ⏭', en: 'Next ⏭' } as LocalizedText,
+    viewExercise: { ko: '🎥 동작 영상 보기', en: '🎥 Watch exercise video' } as LocalizedText,
   },
   nav: {
     home: { ko: '🏠 홈', en: '🏠 Home' } as LocalizedText,
+    encyclopedia: { ko: '📖 사전', en: '📖 Guide' } as LocalizedText,
     record: { ko: '📅 기록', en: '📅 Record' } as LocalizedText,
     settings: { ko: '⚙️ 설정', en: '⚙️ Settings' } as LocalizedText,
+  },
+  encyclopedia: {
+    eyebrow: { ko: '운동 백과사전', en: 'Exercise Guide' } as LocalizedText,
+    title: { ko: '모든 동작 둘러보기', en: 'Browse All Exercises' } as LocalizedText,
+  },
+  modal: {
+    close: { ko: '닫기', en: 'Close' } as LocalizedText,
+    noVideo: {
+      ko: '아직 등록된 영상이 없어요. 아래 버튼으로 유튜브에서 찾아보세요.',
+      en: "No curated video yet — use the button below to find one on YouTube.",
+    } as LocalizedText,
+    openInYoutube: { ko: '유튜브에서 보기 ↗', en: 'Open on YouTube ↗' } as LocalizedText,
   },
   kind: {
     warmup: { ko: '웜업', en: 'Warm-up' } as LocalizedText,
@@ -85,8 +103,4 @@ export function exerciseMetaLabel(locale: Locale, sets: number, work: number, re
 
 export function setProgressLabel(locale: Locale, name: string, set: number, sets: number): string {
   return locale === 'ko' ? `${name} · ${set}/${sets}세트` : `${name} · Set ${set}/${sets}`
-}
-
-export function videoLinkLabel(locale: Locale, name: string): string {
-  return locale === 'ko' ? `▶ ${name} 영상 보기` : `▶ Watch ${name} video`
 }

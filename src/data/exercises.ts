@@ -11,8 +11,19 @@ export interface Exercise {
   variants: Record<Difficulty, LocalizedText>
   /** one-line form cue, localized */
   cue: LocalizedText
-  /** optional curated video URL; when absent we fall back to a YouTube search link */
-  videoUrl?: string
+  /** verified YouTube video id demonstrating the movement, embedded in-app when present */
+  videoId?: string
+}
+
+export const CATEGORY_ORDER: Category[] = ['push', 'pull', 'lower', 'core', 'cardio', 'mobility']
+
+export const CATEGORY_LABEL: Record<Category, LocalizedText> = {
+  push: { ko: '상체 밀기', en: 'Push' },
+  pull: { ko: '상체 당기기', en: 'Pull' },
+  lower: { ko: '하체', en: 'Lower Body' },
+  core: { ko: '코어', en: 'Core' },
+  cardio: { ko: '유산소', en: 'Cardio' },
+  mobility: { ko: '모빌리티', en: 'Mobility' },
 }
 
 export const EXERCISES: Record<string, Exercise> = {
@@ -28,6 +39,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '엉덩이가 처지지 않게 몸을 일직선으로 유지하세요.',
       en: 'Keep your body in a straight line without letting your hips sag.',
     },
+    videoId: 'WDIpL0pjun0',
   },
   pike_pushup: {
     id: 'pike_pushup',
@@ -41,6 +53,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '엉덩이를 높이 들고 정수리 방향으로 내려가며 어깨를 자극하세요.',
       en: 'Lift your hips high and lower toward the crown of your head to target your shoulders.',
     },
+    videoId: 'pHR5yG6xBps',
   },
   chair_dip: {
     id: 'chair_dip',
@@ -54,6 +67,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '팔꿈치를 몸 뒤로 곧게 접었다 펴세요, 어깨는 내리고 유지.',
       en: 'Bend your elbows straight back and press up, keeping your shoulders down.',
     },
+    videoId: 'gsXFaDBOppk',
   },
   plank: {
     id: 'plank',
@@ -67,6 +81,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '허리가 꺾이지 않게 배와 엉덩이에 힘을 주세요.',
       en: "Brace your core and glutes so your lower back doesn't sag.",
     },
+    videoId: '-V6gk1i4pvY',
   },
   squat: {
     id: 'squat',
@@ -80,6 +95,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '무릎이 발끝을 넘어가지 않게, 체중은 발뒤꿈치에.',
       en: 'Keep your knees behind your toes and your weight in your heels.',
     },
+    videoId: 'CKcDiJnLaLY',
   },
   lunge: {
     id: 'lunge',
@@ -93,6 +109,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '앞무릎이 발끝 위에 오도록, 상체는 곧게 세우세요.',
       en: 'Keep your front knee over your ankle and your torso upright.',
     },
+    videoId: '_GqxkGp7NAA',
   },
   glute_bridge: {
     id: 'glute_bridge',
@@ -106,6 +123,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '골반을 위로 밀어올리며 엉덩이를 꽉 조이세요.',
       en: 'Drive your hips up and squeeze your glutes at the top.',
     },
+    videoId: 'nbjJjSa0cKo',
   },
   wall_sit: {
     id: 'wall_sit',
@@ -119,6 +137,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '무릎이 90도가 되게, 등은 벽에 붙이세요.',
       en: 'Keep your knees at 90 degrees with your back flat against the wall.',
     },
+    videoId: 'JaZNYM3zAP0',
   },
   mountain_climber: {
     id: 'mountain_climber',
@@ -132,6 +151,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '엉덩이가 들리지 않게 플랭크 자세를 유지하며 무릎을 당기세요.',
       en: 'Keep your hips level in a plank position as you drive your knees in.',
     },
+    videoId: 'e9Nwd8ckkYA',
   },
   crunch: {
     id: 'crunch',
@@ -145,6 +165,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '목이 아니라 복부의 힘으로 상체를 말아 올리세요.',
       en: 'Curl up using your abs, not your neck.',
     },
+    videoId: 'PAEo-zRSanM',
   },
   leg_raise: {
     id: 'leg_raise',
@@ -158,6 +179,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '허리가 바닥에서 뜨지 않게 하복부에 힘을 주세요.',
       en: 'Engage your lower abs so your lower back stays on the floor.',
     },
+    videoId: 'xJJu-WiROM8',
   },
   burpee: {
     id: 'burpee',
@@ -171,6 +193,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '동작마다 호흡을 크게, 무리하지 말고 본인 속도로.',
       en: 'Breathe big with every rep — go at your own pace.',
     },
+    videoId: 'qLBImHhCXSw',
   },
   superman: {
     id: 'superman',
@@ -184,6 +207,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '팔다리를 동시에 들어올리며 등 전체로 자극을 느끼세요.',
       en: 'Lift your arms and legs together and feel your whole back engage.',
     },
+    videoId: 'cZxtPxeR2H8',
   },
   reverse_snow_angel: {
     id: 'reverse_snow_angel',
@@ -197,6 +221,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '팔을 천천히 크게 원을 그리듯 움직이며 어깨뼈를 모으세요.',
       en: 'Move your arms slowly in a big arc, squeezing your shoulder blades together.',
     },
+    videoId: '52w8iADvL8w',
   },
   bird_dog: {
     id: 'bird_dog',
@@ -210,6 +235,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '반대쪽 팔다리를 뻗을 때 골반이 흔들리지 않게 하세요.',
       en: 'Keep your hips level as you extend opposite arm and leg.',
     },
+    videoId: 'ZdAHe9_HeEw',
   },
   bulgarian_split_squat: {
     id: 'bulgarian_split_squat',
@@ -223,6 +249,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '뒷발은 의자나 소파 위에, 앞다리 위주로 힘을 쓰세요.',
       en: 'Rest your back foot on a chair or sofa and drive through your front leg.',
     },
+    videoId: 'VPhhE6bBzZE',
   },
   side_lunge: {
     id: 'side_lunge',
@@ -236,6 +263,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '옆으로 크게 내딛으며 엉덩이를 뒤로 빼세요.',
       en: 'Step wide to the side and push your hips back.',
     },
+    videoId: 'apsp_uuXZTU',
   },
   sumo_squat: {
     id: 'sumo_squat',
@@ -249,6 +277,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '발끝을 넓게 벌리고 무릎을 발끝 방향으로 밀어주세요.',
       en: 'Take a wide stance and push your knees out toward your toes.',
     },
+    videoId: 'kjlfpqXnyL8',
   },
   jumping_jack: {
     id: 'jumping_jack',
@@ -262,6 +291,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '리듬감 있게, 무릎에 무리가 가면 점프 없이 진행하세요.',
       en: 'Keep a steady rhythm — skip the jump if it bothers your knees.',
     },
+    videoId: 'uLVt6u15L98',
   },
   cat_cow_stretch: {
     id: 'cat_cow_stretch',
@@ -275,6 +305,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '호흡에 맞춰 척추를 천천히 말고 펴세요.',
       en: 'Round and arch your spine slowly in time with your breath.',
     },
+    videoId: 'xyNwxiuERXc',
   },
   hip_flexor_stretch: {
     id: 'hip_flexor_stretch',
@@ -288,6 +319,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '골반을 앞으로 살짝 밀며 앞쪽 고관절이 늘어나는 느낌을 느끼세요.',
       en: 'Shift your hips slightly forward and feel the stretch in the front of your hip.',
     },
+    videoId: 'KT0HlPGCl6k',
   },
   chest_shoulder_stretch: {
     id: 'chest_shoulder_stretch',
@@ -301,6 +333,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '문틀이나 벽을 잡고 가슴을 천천히 열어주세요.',
       en: 'Hold a doorway or wall and open your chest slowly.',
     },
+    videoId: 'h4M4XmCBFd8',
   },
   hamstring_stretch: {
     id: 'hamstring_stretch',
@@ -314,6 +347,7 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '무릎을 살짝 펴고 상체를 천천히 숙이세요, 반동 없이.',
       en: 'Soften your knees slightly and fold forward slowly, no bouncing.',
     },
+    videoId: '9ESpoUPqpFw',
   },
   deep_breathing: {
     id: 'deep_breathing',
@@ -327,13 +361,22 @@ export const EXERCISES: Record<string, Exercise> = {
       ko: '코로 천천히 들이마시고 입으로 길게 내쉬며 몸을 이완하세요.',
       en: 'Inhale slowly through your nose and exhale long through your mouth to relax.',
     },
+    videoId: '9jpchJcKivk',
   },
 }
 
-export function exerciseVideoUrl(exercise: Exercise, difficulty: Difficulty, locale: Locale): string {
-  if (exercise.videoUrl) return exercise.videoUrl
+/** YouTube search link, used when no curated videoId is available yet. */
+export function exerciseSearchUrl(exercise: Exercise, difficulty: Difficulty, locale: Locale): string {
   const name = exercise.variants[difficulty][locale]
   const suffix = locale === 'ko' ? '홈트 자세' : 'home workout form'
   const query = encodeURIComponent(`${name} ${suffix}`)
   return `https://www.youtube.com/results?search_query=${query}`
+}
+
+export function exerciseEmbedUrl(exercise: Exercise): string | undefined {
+  return exercise.videoId ? `https://www.youtube.com/embed/${exercise.videoId}` : undefined
+}
+
+export function exerciseWatchUrl(exercise: Exercise): string | undefined {
+  return exercise.videoId ? `https://www.youtube.com/watch?v=${exercise.videoId}` : undefined
 }
