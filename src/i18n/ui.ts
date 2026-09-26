@@ -104,3 +104,7 @@ export function exerciseMetaLabel(locale: Locale, sets: number, work: number, re
 export function setProgressLabel(locale: Locale, name: string, set: number, sets: number): string {
   return locale === 'ko' ? `${name} · ${set}/${sets}세트` : `${name} · Set ${set}/${sets}`
 }
+
+export function tenSecondsLeftAnnouncement(locale: Locale): string {
+  return locale === 'ko' ? '10초 남았어요' : '10 seconds left'
+}

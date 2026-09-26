@@ -2,8 +2,11 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Difficulty } from '../data/exercises'
 import { EXERCISES } from '../data/exercises'
 import type { DayRoutine } from '../data/routines'
+import type { Locale } from '../i18n/locale'
 import { useLocale } from '../i18n/locale'
-import { UI } from '../i18n/ui'
+import { tenSecondsLeftAnnouncement, UI } from '../i18n/ui'
+import { speak, speakCountdownNumber } from '../lib/speech'
+import type { TimerStep } from '../lib/timerSteps'
 import { buildSteps } from '../lib/timerSteps'
 
 interface WorkoutSessionProps {
@@ -19,6 +22,14 @@ function vibrate(pattern: number | number[]) {
     navigator.vibrate?.(pattern)
   } catch {
     // vibration not supported - ignore
+  }
+}
+
+function announceStep(step: TimerStep, difficulty: Difficulty, locale: Locale) {
+  if (step.kind === 'work' && step.exerciseId) {
+    speak(EXERCISES[step.exerciseId].variants[difficulty][locale], locale)
+  } else {
+    speak(UI.kind[step.kind][locale], locale)
   }
 }
 
@@ -58,16 +69,25 @@ export default function WorkoutSession({ routine, difficulty, onFinish, onExit, 
 
   useEffect(() => {
     if (paused || isDone) return
+
+    if (step && secondsLeft === 10 && step.seconds > 10) {
+      speak(tenSecondsLeftAnnouncement(locale), locale)
+    } else if (secondsLeft >= 1 && secondsLeft <= 5) {
+      speakCountdownNumber(secondsLeft, locale)
+    }
+
     if (secondsLeft <= 0) {
       const next = stepIndex + 1
-      vibrate(next >= steps.length ? [200, 100, 200] : 150)
+      const nextStep = steps[next]
+      vibrate(nextStep ? 150 : [200, 100, 200])
+      if (nextStep) announceStep(nextStep, difficulty, locale)
       setStepIndex(next)
-      setSecondsLeft(steps[next]?.seconds ?? 0)
+      setSecondsLeft(nextStep?.seconds ?? 0)
       return
     }
     const timeout = setTimeout(() => setSecondsLeft((s) => s - 1), 1000)
     return () => clearTimeout(timeout)
-  }, [secondsLeft, paused, isDone, stepIndex, steps])
+  }, [secondsLeft, paused, isDone, stepIndex, steps, step, difficulty, locale])
 
   if (isDone || !step) return null
 
@@ -77,8 +97,10 @@ export default function WorkoutSession({ routine, difficulty, onFinish, onExit, 
 
   function skip() {
     const next = stepIndex + 1
+    const nextStep = steps[next]
+    if (nextStep) announceStep(nextStep, difficulty, locale)
     setStepIndex(next)
-    setSecondsLeft(steps[next]?.seconds ?? 0)
+    setSecondsLeft(nextStep?.seconds ?? 0)
   }
 
   return (
