@@ -34,6 +34,8 @@ export const UI = {
     resume: { ko: '▶ 계속', en: '▶ Resume' } as LocalizedText,
     next: { ko: '다음 ⏭', en: 'Next ⏭' } as LocalizedText,
     viewExercise: { ko: '🎥 동작 영상 보기', en: '🎥 Watch exercise video' } as LocalizedText,
+    musicOn: { ko: '🎵 음악 끄기', en: '🎵 Music off' } as LocalizedText,
+    musicOff: { ko: '🔇 음악 켜기', en: '🔇 Music on' } as LocalizedText,
   },
   nav: {
     home: { ko: '🏠 홈', en: '🏠 Home' } as LocalizedText,

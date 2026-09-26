@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import BackgroundMusicPlayer from './BackgroundMusicPlayer'
 import type { Difficulty } from '../data/exercises'
 import { EXERCISES } from '../data/exercises'
 import type { DayRoutine } from '../data/routines'
@@ -12,6 +13,8 @@ import { buildSteps } from '../lib/timerSteps'
 interface WorkoutSessionProps {
   routine: DayRoutine
   difficulty: Difficulty
+  musicEnabled: boolean
+  onMusicToggle: (next: boolean) => void
   onFinish: () => void
   onExit: () => void
   onShowExercise: (exerciseId: string) => void
@@ -33,7 +36,15 @@ function announceStep(step: TimerStep, difficulty: Difficulty, locale: Locale) {
   }
 }
 
-export default function WorkoutSession({ routine, difficulty, onFinish, onExit, onShowExercise }: WorkoutSessionProps) {
+export default function WorkoutSession({
+  routine,
+  difficulty,
+  musicEnabled,
+  onMusicToggle,
+  onFinish,
+  onExit,
+  onShowExercise,
+}: WorkoutSessionProps) {
   const { locale, t } = useLocale()
   const steps = useMemo(() => buildSteps(routine, difficulty, locale), [routine, difficulty, locale])
   const [stepIndex, setStepIndex] = useState(0)
@@ -132,6 +143,12 @@ export default function WorkoutSession({ routine, difficulty, onFinish, onExit, 
           {t(UI.session.viewExercise)}
         </button>
       )}
+
+      <button className="video-link" onClick={() => onMusicToggle(!musicEnabled)}>
+        {musicEnabled ? t(UI.session.musicOn) : t(UI.session.musicOff)}
+      </button>
+
+      <BackgroundMusicPlayer enabled={musicEnabled} />
 
       <p className="session-progress">
         {stepIndex + 1} / {steps.length}

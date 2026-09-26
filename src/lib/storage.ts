@@ -6,9 +6,10 @@ const COMPLETIONS_KEY = 'calisthenics.completions.v1'
 
 export interface Settings {
   difficulty: Difficulty
+  musicEnabled: boolean
 }
 
-const DEFAULT_SETTINGS: Settings = { difficulty: 'intermediate' }
+const DEFAULT_SETTINGS: Settings = { difficulty: 'intermediate', musicEnabled: true }
 
 function readJson<T>(key: string, fallback: T): T {
   try {

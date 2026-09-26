@@ -5,6 +5,8 @@
 - 배포: https://sehyunnoh.github.io/calisthenics/
 - 데이터 저장: 브라우저 `localStorage` (서버 없음, 기기별 저장)
 - 운동 영상: 홈 화면 루틴 목록, 운동 진행 화면, 백과사전(하단 "사전" 탭) 어디서든 운동 이름을 탭하면 모달로 시연 영상이 재생됩니다.
+- 음성 안내: 10초 남았을 때 안내, 5-4-3-2-1 음성 카운트다운, 다음이 휴식/운동인지 음성으로 안내 (Web Speech API)
+- 배경 음악: 운동 진행 화면에서 "🎵 음악 끄기/켜기"로 토글 (NCS 무료 운동 음악 플레이리스트 자동재생, 설정은 기기에 저장됨)
 
 ## 개발
 
@@ -26,5 +28,6 @@ npm run build
 - `src/data/exercises.ts`: 동작 목록, 난이도별 이름, 자세 설명(cue), 시연 영상(`videoId`, 유튜브 video id)
 - `src/data/routines.ts`: 요일별 루틴 구성, 세트/시간 값
 - `src/i18n/ui.ts`: 화면 문구(한/영) 번역
+- `src/data/music.ts`: 배경 음악 유튜브 재생목록 ID
 
 동작에 `videoId`가 없으면 자동으로 유튜브 검색 링크로 대체됩니다.

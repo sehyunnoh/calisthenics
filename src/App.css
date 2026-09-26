@@ -340,6 +340,22 @@
   font-size: 13px;
 }
 
+.music-player {
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface-2);
+  margin: 10px 0 16px;
+}
+
+.music-player iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
 /* --- exercise modal --- */
 
 .modal-backdrop {

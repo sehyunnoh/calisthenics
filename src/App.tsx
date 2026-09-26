@@ -18,6 +18,7 @@ export default function App() {
   const { t } = useLocale()
   const [view, setView] = useState<View>('home')
   const [difficulty, setDifficulty] = useState(() => getSettings().difficulty)
+  const [musicEnabled, setMusicEnabled] = useState(() => getSettings().musicEnabled)
   const [completedToday, setCompletedToday] = useState(() => isTodayCompleted())
   const [completions, setCompletions] = useState(() => getCompletions())
   const [streak, setStreak] = useState(() => getStreak())
@@ -40,7 +41,12 @@ export default function App() {
 
   function handleDifficultyChange(next: typeof difficulty) {
     setDifficulty(next)
-    setSettings({ difficulty: next })
+    setSettings({ difficulty: next, musicEnabled })
+  }
+
+  function handleMusicToggle(next: boolean) {
+    setMusicEnabled(next)
+    setSettings({ difficulty, musicEnabled: next })
   }
 
   return (
@@ -60,6 +66,8 @@ export default function App() {
           <WorkoutSession
             routine={routine}
             difficulty={difficulty}
+            musicEnabled={musicEnabled}
+            onMusicToggle={handleMusicToggle}
             onFinish={handleFinishSession}
             onExit={() => setView('home')}
             onShowExercise={setOpenExerciseId}
