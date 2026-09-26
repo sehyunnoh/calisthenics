@@ -122,6 +122,27 @@
   font-size: 13px;
 }
 
+.language-options {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.language-option {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-weight: 700;
+}
+
+.language-option.selected {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent);
+  color: var(--accent);
+}
+
 .difficulty-options {
   display: flex;
   flex-direction: column;

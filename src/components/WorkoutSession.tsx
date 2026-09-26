@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Difficulty } from '../data/exercises'
 import { EXERCISES, exerciseVideoUrl } from '../data/exercises'
 import type { DayRoutine } from '../data/routines'
+import { useLocale } from '../i18n/locale'
+import { UI, videoLinkLabel } from '../i18n/ui'
 import { buildSteps } from '../lib/timerSteps'
 
 interface WorkoutSessionProps {
@@ -9,13 +11,6 @@ interface WorkoutSessionProps {
   difficulty: Difficulty
   onFinish: () => void
   onExit: () => void
-}
-
-const KIND_LABEL: Record<string, string> = {
-  warmup: '웜업',
-  work: '운동',
-  rest: '휴식',
-  cooldown: '쿨다운',
 }
 
 function vibrate(pattern: number | number[]) {
@@ -27,7 +22,8 @@ function vibrate(pattern: number | number[]) {
 }
 
 export default function WorkoutSession({ routine, difficulty, onFinish, onExit }: WorkoutSessionProps) {
-  const steps = useMemo(() => buildSteps(routine, difficulty), [routine, difficulty])
+  const { locale, t } = useLocale()
+  const steps = useMemo(() => buildSteps(routine, difficulty, locale), [routine, difficulty, locale])
   const [stepIndex, setStepIndex] = useState(0)
   const [secondsLeft, setSecondsLeft] = useState(steps[0]?.seconds ?? 0)
   const [paused, setPaused] = useState(false)
@@ -87,13 +83,13 @@ export default function WorkoutSession({ routine, difficulty, onFinish, onExit }
   return (
     <div className="session">
       <button className="ghost-button session-exit" onClick={onExit}>
-        ✕ 종료
+        {t(UI.session.exit)}
       </button>
 
-      <div className={`session-kind kind-${step.kind}`}>{KIND_LABEL[step.kind]}</div>
+      <div className={`session-kind kind-${step.kind}`}>{UI.kind[step.kind][locale]}</div>
       <h2 className="session-title">{step.title}</h2>
 
-      {exercise && <p className="session-cue">{exercise.cue}</p>}
+      {exercise && <p className="session-cue">{t(exercise.cue)}</p>}
 
       <div className="timer-ring" style={{ '--progress': progress } as React.CSSProperties}>
         <span className="timer-seconds">{secondsLeft}</span>
@@ -101,21 +97,21 @@ export default function WorkoutSession({ routine, difficulty, onFinish, onExit }
 
       <div className="session-controls">
         <button className="ghost-button" onClick={() => setPaused((p) => !p)}>
-          {paused ? '▶ 계속' : '⏸ 일시정지'}
+          {paused ? t(UI.session.resume) : t(UI.session.pause)}
         </button>
         <button className="ghost-button" onClick={skip}>
-          다음 ⏭
+          {t(UI.session.next)}
         </button>
       </div>
 
       {exercise && (
         <a
           className="video-link"
-          href={exerciseVideoUrl(exercise, difficulty)}
+          href={exerciseVideoUrl(exercise, difficulty, locale)}
           target="_blank"
           rel="noreferrer"
         >
-          ▶ {exercise.variants[difficulty]} 영상 보기
+          {videoLinkLabel(locale, exercise.variants[difficulty][locale])}
         </a>
       )}
 

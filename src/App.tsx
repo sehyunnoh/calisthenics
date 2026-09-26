@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react'
 import './App.css'
 import WorkoutSession from './components/WorkoutSession'
 import { routineForDay } from './data/routines'
+import { useLocale } from './i18n/locale'
+import { UI } from './i18n/ui'
 import Home from './pages/Home'
 import Record from './pages/Record'
 import Settings from './pages/Settings'
@@ -10,6 +12,7 @@ import { getCompletions, getSettings, getStreak, isTodayCompleted, markCompleted
 type View = 'home' | 'session' | 'record' | 'settings'
 
 export default function App() {
+  const { t } = useLocale()
   const [view, setView] = useState<View>('home')
   const [difficulty, setDifficulty] = useState(() => getSettings().difficulty)
   const [completedToday, setCompletedToday] = useState(() => isTodayCompleted())
@@ -62,13 +65,13 @@ export default function App() {
       {view !== 'session' && (
         <nav className="bottom-nav">
           <button className={view === 'home' ? 'active' : ''} onClick={() => setView('home')}>
-            🏠 홈
+            {t(UI.nav.home)}
           </button>
           <button className={view === 'record' ? 'active' : ''} onClick={() => setView('record')}>
-            📅 기록
+            {t(UI.nav.record)}
           </button>
           <button className={view === 'settings' ? 'active' : ''} onClick={() => setView('settings')}>
-            ⚙️ 설정
+            {t(UI.nav.settings)}
           </button>
         </nav>
       )}

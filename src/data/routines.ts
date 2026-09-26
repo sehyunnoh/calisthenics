@@ -1,3 +1,5 @@
+import type { LocalizedText } from '../i18n/locale'
+
 export interface RoutineExerciseRef {
   exerciseId: string
   workSeconds: number
@@ -8,7 +10,7 @@ export interface RoutineExerciseRef {
 export interface DayRoutine {
   /** 0 = Sunday ... 6 = Saturday, matches Date#getDay() */
   day: number
-  label: string
+  label: LocalizedText
   type: 'workout' | 'recovery'
   warmupSeconds: number
   cooldownSeconds: number
@@ -27,7 +29,7 @@ export const WEEKLY_ROUTINE: DayRoutine[] = [
   {
     // Sunday
     day: 0,
-    label: '회복 & 모빌리티',
+    label: { ko: '회복 & 모빌리티', en: 'Recovery & Mobility' },
     type: 'recovery',
     warmupSeconds: 0,
     cooldownSeconds: 0,
@@ -42,7 +44,7 @@ export const WEEKLY_ROUTINE: DayRoutine[] = [
   {
     // Monday
     day: 1,
-    label: '상체 밀기',
+    label: { ko: '상체 밀기', en: 'Push (Upper Body)' },
     type: 'workout',
     warmupSeconds: 60,
     cooldownSeconds: 60,
@@ -51,7 +53,7 @@ export const WEEKLY_ROUTINE: DayRoutine[] = [
   {
     // Tuesday
     day: 2,
-    label: '하체',
+    label: { ko: '하체', en: 'Lower Body' },
     type: 'workout',
     warmupSeconds: 60,
     cooldownSeconds: 60,
@@ -60,7 +62,7 @@ export const WEEKLY_ROUTINE: DayRoutine[] = [
   {
     // Wednesday
     day: 3,
-    label: '코어 + 유산소',
+    label: { ko: '코어 + 유산소', en: 'Core + Cardio' },
     type: 'workout',
     warmupSeconds: 60,
     cooldownSeconds: 60,
@@ -69,7 +71,7 @@ export const WEEKLY_ROUTINE: DayRoutine[] = [
   {
     // Thursday
     day: 4,
-    label: '상체 당기기',
+    label: { ko: '상체 당기기', en: 'Pull (Upper Body)' },
     type: 'workout',
     warmupSeconds: 60,
     cooldownSeconds: 60,
@@ -78,7 +80,7 @@ export const WEEKLY_ROUTINE: DayRoutine[] = [
   {
     // Friday
     day: 5,
-    label: '하체 & 힙',
+    label: { ko: '하체 & 힙', en: 'Lower Body & Hips' },
     type: 'workout',
     warmupSeconds: 60,
     cooldownSeconds: 60,
@@ -87,7 +89,7 @@ export const WEEKLY_ROUTINE: DayRoutine[] = [
   {
     // Saturday
     day: 6,
-    label: '전신 서킷',
+    label: { ko: '전신 서킷', en: 'Full-Body Circuit' },
     type: 'workout',
     warmupSeconds: 60,
     cooldownSeconds: 60,
