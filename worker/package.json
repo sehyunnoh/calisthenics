@@ -1,0 +1,16 @@
+{
+  "name": "calisthenics-push",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "vapid": "node scripts/gen-vapid.mjs"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261019.1",
+    "typescript": "~6.0.2",
+    "wrangler": "^4.0.0"
+  }
+}

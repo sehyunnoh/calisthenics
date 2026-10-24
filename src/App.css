@@ -100,6 +100,16 @@
   opacity: 0.85;
 }
 
+.reminder-banner {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 .done-note {
   margin-top: 14px;
   color: var(--text-muted);
@@ -155,6 +165,29 @@
   border-color: var(--accent);
   outline: 2px solid var(--accent);
   color: var(--accent);
+}
+
+.reminder-toggle {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.reminder-toggle.selected {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent);
+  color: var(--accent);
+}
+
+.reminder-hint {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0 0 28px;
 }
 
 .difficulty-options {

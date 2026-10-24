@@ -28,3 +28,7 @@ plan.md
 
 # local Claude Code tooling state
 .claude/
+
+worker/node_modules
+worker/.wrangler
+worker/.dev.vars

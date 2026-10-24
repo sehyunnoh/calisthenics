@@ -3,23 +3,37 @@ import { EXERCISES } from '../data/exercises'
 import type { DayRoutine } from '../data/routines'
 import { useLocale } from '../i18n/locale'
 import { exerciseMetaLabel, streakLabel, UI } from '../i18n/ui'
+import { isReminderWindow } from '../lib/reminder'
 
 interface HomeProps {
   routine: DayRoutine
   difficulty: Difficulty
   completedToday: boolean
   streak: number
+  reminderEnabled: boolean
   onStart: () => void
   onSelectExercise: (exerciseId: string) => void
 }
 
-export default function Home({ routine, difficulty, completedToday, streak, onStart, onSelectExercise }: HomeProps) {
+export default function Home({
+  routine,
+  difficulty,
+  completedToday,
+  streak,
+  reminderEnabled,
+  onStart,
+  onSelectExercise,
+}: HomeProps) {
   const { locale, t } = useLocale()
 
   return (
     <div className="page">
       <p className="eyebrow">{t(UI.home.eyebrow)}</p>
       <h1 className="page-title">{t(routine.label)}</h1>
+
+      {reminderEnabled && !completedToday && isReminderWindow() && (
+        <p className="reminder-banner">{t(UI.reminder.banner)}</p>
+      )}
 
       {streak > 0 && <p className="streak-pill">{streakLabel(locale, streak)}</p>}
 

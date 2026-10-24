@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 import ExerciseModal from './components/ExerciseModal'
 import WorkoutSession from './components/WorkoutSession'
@@ -10,6 +10,7 @@ import Encyclopedia from './pages/Encyclopedia'
 import Home from './pages/Home'
 import Record from './pages/Record'
 import Settings from './pages/Settings'
+import { disableReminder, refreshReminder, syncCompletion } from './lib/reminder'
 import { getCompletions, getSettings, getStreak, isTodayCompleted, markCompleted, setSettings } from './lib/storage'
 
 type View = 'home' | 'session' | 'encyclopedia' | 'record' | 'settings'
@@ -19,6 +20,7 @@ export default function App() {
   const [view, setView] = useState<View>('home')
   const [difficulty, setDifficulty] = useState(() => getSettings().difficulty)
   const [musicEnabled, setMusicEnabled] = useState(() => getSettings().musicEnabled)
+  const [reminderEnabled, setReminderEnabled] = useState(() => getSettings().reminderEnabled)
   const [completedToday, setCompletedToday] = useState(() => isTodayCompleted())
   const [completions, setCompletions] = useState(() => getCompletions())
   const [streak, setStreak] = useState(() => getStreak())
@@ -26,6 +28,10 @@ export default function App() {
 
   const routine = useMemo(() => routineForDay(new Date().getDay()), [])
   const openExercise = openExerciseId ? EXERCISES[openExerciseId] : undefined
+
+  useEffect(() => {
+    if (reminderEnabled) void refreshReminder()
+  }, [reminderEnabled])
 
   function refreshRecords() {
     setCompletedToday(isTodayCompleted())
@@ -35,18 +41,25 @@ export default function App() {
 
   function handleFinishSession() {
     markCompleted()
+    void syncCompletion(true)
     refreshRecords()
     setView('home')
   }
 
   function handleDifficultyChange(next: typeof difficulty) {
     setDifficulty(next)
-    setSettings({ difficulty: next, musicEnabled })
+    setSettings({ difficulty: next, musicEnabled, reminderEnabled })
   }
 
   function handleMusicToggle(next: boolean) {
     setMusicEnabled(next)
-    setSettings({ difficulty, musicEnabled: next })
+    setSettings({ difficulty, musicEnabled: next, reminderEnabled })
+  }
+
+  function handleReminderChange(next: boolean) {
+    setReminderEnabled(next)
+    setSettings({ difficulty, musicEnabled, reminderEnabled: next })
+    if (!next) void disableReminder()
   }
 
   return (
@@ -58,6 +71,7 @@ export default function App() {
             difficulty={difficulty}
             completedToday={completedToday}
             streak={streak}
+            reminderEnabled={reminderEnabled}
             onStart={() => setView('session')}
             onSelectExercise={setOpenExerciseId}
           />
@@ -75,7 +89,14 @@ export default function App() {
         )}
         {view === 'encyclopedia' && <Encyclopedia difficulty={difficulty} onSelect={setOpenExerciseId} />}
         {view === 'record' && <Record completions={completions} streak={streak} />}
-        {view === 'settings' && <Settings difficulty={difficulty} onChange={handleDifficultyChange} />}
+        {view === 'settings' && (
+          <Settings
+            difficulty={difficulty}
+            onChange={handleDifficultyChange}
+            reminderEnabled={reminderEnabled}
+            onReminderChange={handleReminderChange}
+          />
+        )}
       </main>
 
       {openExercise && (

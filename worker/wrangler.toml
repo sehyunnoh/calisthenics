@@ -1,0 +1,18 @@
+name = "calisthenics-push"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+# 매시 정각에 실행 (각 구독자의 현지 시각이 18~21시일 때만 실제로 푸시를 보냄)
+[triggers]
+crons = ["0 * * * *"]
+
+[[kv_namespaces]]
+binding = "SUBS"
+id = "616fa667b8b34269adb878bbd1d05bdd"
+
+[vars]
+# `npm run vapid` 로 생성한 공개키
+VAPID_PUBLIC_KEY = "BDVo3PjxNVCp_RAlfGfrBv-CUxJrLQ88aF5bCIe5aWc6Nvwj9VpIMLU_WaXOV1r1K-De2UZj_MVybDEkmFUY3Ro"
+VAPID_SUBJECT = "mailto:sehyun.noh83@gmail.com"
+ALLOWED_ORIGINS = "https://sehyunnoh.github.io,http://localhost:5173"
+# VAPID_PRIVATE_JWK 는 비밀값이라 `wrangler secret put VAPID_PRIVATE_JWK` 로 등록

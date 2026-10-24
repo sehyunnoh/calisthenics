@@ -14,6 +14,14 @@ export const UI = {
       en: 'Tap an exercise to watch how it looks',
     } as LocalizedText,
   },
+  reminder: {
+    title: { ko: '오늘 운동 아직 안 했어요 💪', en: "You haven't worked out today 💪" } as LocalizedText,
+    body: { ko: '10분이면 충분해요. 지금 시작해볼까요?', en: 'Ten minutes is enough. Ready to start?' } as LocalizedText,
+    banner: {
+      ko: '⏰ 오늘 운동을 아직 완료하지 않았어요. 밤 10시 전에 끝내봐요!',
+      en: "⏰ You haven't completed today's workout yet. Finish it before 10 PM!",
+    } as LocalizedText,
+  },
   record: {
     eyebrow: { ko: '나의 기록', en: 'My Record' } as LocalizedText,
     startToday: { ko: '오늘부터 시작해봐요', en: 'Start today' } as LocalizedText,
@@ -23,6 +31,25 @@ export const UI = {
     eyebrow: { ko: '설정', en: 'Settings' } as LocalizedText,
     difficultyTitle: { ko: '난이도', en: 'Difficulty' } as LocalizedText,
     languageTitle: { ko: '언어', en: 'Language' } as LocalizedText,
+    reminderTitle: { ko: '운동 알림', en: 'Workout Reminder' } as LocalizedText,
+    reminderOn: { ko: '🔔 알림 켜짐', en: '🔔 Reminder on' } as LocalizedText,
+    reminderOff: { ko: '🔕 알림 꺼짐', en: '🔕 Reminder off' } as LocalizedText,
+    reminderHint: {
+      ko: '18시까지 운동을 완료하지 않으면 밤 10시 전까지 1시간마다 알려줘요. 앱을 닫아 둬도 알려줘요. (운동을 완료하면 그날 알림은 멈춰요)',
+      en: "If today's workout isn't done by 6 PM, you'll be reminded every hour until 10 PM. Works even when the app is closed, and stops once you finish.",
+    } as LocalizedText,
+    reminderDenied: {
+      ko: '브라우저에서 알림이 차단되어 있어요. 사이트 설정에서 알림을 허용해 주세요.',
+      en: 'Notifications are blocked. Please allow them in your browser site settings.',
+    } as LocalizedText,
+    reminderError: {
+      ko: '알림 등록에 실패했어요. 네트워크를 확인하고 다시 시도해 주세요.',
+      en: 'Could not set up the reminder. Check your connection and try again.',
+    } as LocalizedText,
+    reminderUnsupported: {
+      ko: '이 브라우저에서는 푸시 알림을 쓸 수 없어요. (iOS는 홈 화면에 추가 후 사용해 주세요)',
+      en: 'Push notifications are unavailable in this browser. (On iOS, add the app to your home screen first.)',
+    } as LocalizedText,
     note: {
       ko: '모든 기록과 설정은 이 기기의 브라우저에만 저장돼요 (localStorage). 다른 기기나 브라우저에서는 기록이 공유되지 않아요.',
       en: "All records and settings are stored only in this device's browser (localStorage). They are not shared with other devices or browsers.",
