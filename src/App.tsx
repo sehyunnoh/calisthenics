@@ -10,10 +10,11 @@ import Encyclopedia from './pages/Encyclopedia'
 import Home from './pages/Home'
 import Record from './pages/Record'
 import Settings from './pages/Settings'
+import Videos from './pages/Videos'
 import { disableReminder, refreshReminder, syncCompletion } from './lib/reminder'
 import { getCompletions, getSettings, getStreak, isTodayCompleted, markCompleted, setSettings } from './lib/storage'
 
-type View = 'home' | 'session' | 'encyclopedia' | 'record' | 'settings'
+type View = 'home' | 'session' | 'encyclopedia' | 'record' | 'videos' | 'settings'
 
 export default function App() {
   const { t } = useLocale()
@@ -89,6 +90,7 @@ export default function App() {
         )}
         {view === 'encyclopedia' && <Encyclopedia difficulty={difficulty} onSelect={setOpenExerciseId} />}
         {view === 'record' && <Record completions={completions} streak={streak} />}
+        {view === 'videos' && <Videos />}
         {view === 'settings' && (
           <Settings
             difficulty={difficulty}
@@ -113,6 +115,9 @@ export default function App() {
           </button>
           <button className={view === 'record' ? 'active' : ''} onClick={() => setView('record')}>
             {t(UI.nav.record)}
+          </button>
+          <button className={view === 'videos' ? 'active' : ''} onClick={() => setView('videos')}>
+            {t(UI.nav.videos)}
           </button>
           <button className={view === 'settings' ? 'active' : ''} onClick={() => setView('settings')}>
             {t(UI.nav.settings)}

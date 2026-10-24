@@ -68,7 +68,31 @@ export const UI = {
     home: { ko: '🏠 홈', en: '🏠 Home' } as LocalizedText,
     encyclopedia: { ko: '📖 사전', en: '📖 Guide' } as LocalizedText,
     record: { ko: '📅 기록', en: '📅 Record' } as LocalizedText,
+    videos: { ko: '🎬 영상', en: '🎬 Videos' } as LocalizedText,
     settings: { ko: '⚙️ 설정', en: '⚙️ Settings' } as LocalizedText,
+  },
+  videos: {
+    eyebrow: { ko: '내 영상', en: 'My Videos' } as LocalizedText,
+    title: { ko: '저장한 운동 영상', en: 'Saved Workout Videos' } as LocalizedText,
+    linkPlaceholder: { ko: '유튜브 링크 붙여넣기', en: 'Paste a YouTube link' } as LocalizedText,
+    titlePlaceholder: { ko: '제목 / 메모 (선택)', en: 'Title / note (optional)' } as LocalizedText,
+    add: { ko: '추가하기', en: 'Add' } as LocalizedText,
+    untitled: { ko: '제목 없는 영상', en: 'Untitled video' } as LocalizedText,
+    invalidLink: {
+      ko: '유튜브 링크가 아닌 것 같아요. 주소를 다시 확인해 주세요.',
+      en: "That doesn't look like a YouTube link.",
+    } as LocalizedText,
+    duplicate: { ko: '이미 저장한 영상이에요.', en: 'Already saved.' } as LocalizedText,
+    empty: {
+      ko: '아직 저장한 영상이 없어요. 유튜브에서 마음에 드는 영상을 찾으면 공유 → 링크 복사 후 붙여넣어 보세요.',
+      en: 'No videos yet. When you find a good one on YouTube, copy its link and paste it above.',
+    } as LocalizedText,
+    confirmRemove: { ko: '이 영상을 목록에서 삭제할까요?', en: 'Remove this video from your list?' } as LocalizedText,
+    remove: { ko: '삭제', en: 'Remove' } as LocalizedText,
+    note: {
+      ko: '저장한 영상은 이 기기의 브라우저에만 저장돼요.',
+      en: "Saved videos are stored only in this device's browser.",
+    } as LocalizedText,
   },
   encyclopedia: {
     eyebrow: { ko: '운동 백과사전', en: 'Exercise Guide' } as LocalizedText,
