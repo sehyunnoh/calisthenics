@@ -42,3 +42,13 @@ GitHub 저장소 → Settings → Secrets and variables → Actions → **Variab
 
 푸시 서비스(FCM 등)가 404/410을 돌려주면 해당 구독은 자동으로 삭제됩니다.
 `ALLOWED_ORIGINS`(wrangler.toml)에 없는 사이트에서는 CORS로 호출할 수 없습니다.
+
+## Discord 운동 기록 알림
+
+운동 완료 직후 `✅` 메시지를, 밤 10시(`DISCORD_TZ`, 기본 `Asia/Seoul`)까지 기록이 없으면 `❌` 메시지를 Discord 채널에 남깁니다.
+
+1. Discord 채널 설정 → 연동 → 웹후크 → 새 웹후크 → URL 복사
+2. `cd worker && npx wrangler secret put DISCORD_WEBHOOK_URL` 에 URL 입력 (비밀값이라 코드/`wrangler.toml` 에 넣지 않음)
+3. `npx wrangler deploy`
+
+푸시 알림 설정과 무관하게 동작하며, 같은 날짜의 완료 보고는 한 번만 전송됩니다.

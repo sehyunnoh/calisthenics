@@ -11,7 +11,7 @@ import Home from './pages/Home'
 import Record from './pages/Record'
 import Settings from './pages/Settings'
 import Videos from './pages/Videos'
-import { disableReminder, refreshReminder, syncCompletion } from './lib/reminder'
+import { disableReminder, refreshReminder, reportCompletion, syncCompletion } from './lib/reminder'
 import { getCompletions, getSettings, getStreak, isTodayCompleted, markCompleted, setSettings } from './lib/storage'
 
 type View = 'home' | 'session' | 'encyclopedia' | 'record' | 'videos' | 'settings'
@@ -34,6 +34,10 @@ export default function App() {
     if (reminderEnabled) void refreshReminder()
   }, [reminderEnabled])
 
+  useEffect(() => {
+    if (isTodayCompleted()) void reportCompletion()
+  }, [])
+
   function refreshRecords() {
     setCompletedToday(isTodayCompleted())
     setCompletions(getCompletions())
@@ -43,6 +47,7 @@ export default function App() {
   function handleFinishSession() {
     markCompleted()
     void syncCompletion(true)
+    void reportCompletion()
     refreshRecords()
     setView('home')
   }

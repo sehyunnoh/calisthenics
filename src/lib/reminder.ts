@@ -111,3 +111,13 @@ export async function syncCompletion(done: boolean): Promise<void> {
     // Retried by refreshReminder() on the next app start.
   }
 }
+
+/** Logs today's completion to the Discord channel via the worker (deduplicated server-side). */
+export async function reportCompletion(): Promise<void> {
+  if (!API_URL) return
+  try {
+    await post('/complete', { date: todayKey() })
+  } catch {
+    // Retried on the next app start while today is still completed.
+  }
+}

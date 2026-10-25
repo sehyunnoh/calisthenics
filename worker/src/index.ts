@@ -4,9 +4,14 @@
  * - POST /subscribe   { subscription, tz, date?, done? }  register a device (and its completion state)
  * - POST /status      { endpoint, date, done }            record that a day was completed / un-completed
  * - POST /unsubscribe { endpoint }                        remove a device
+ * - POST /complete   { date }                            post "workout done" to Discord (once per day)
+ * - POST /test       { app? }  (Bearer ADMIN_TOKEN)      push right now to every device of `app`, ignoring time window / completion
  *
  * A cron runs every hour. For each device whose local time is 18:00-21:59 and whose
  * local "today" isn't marked done, it sends an empty Web Push; the service worker shows the notification.
+ *
+ * Discord log: /complete posts a message right after a workout; the 22:00 (DISCORD_TZ) cron run posts
+ * a "not done" message if no completion was reported for that day.
  */
 
 interface Env {
@@ -15,6 +20,9 @@ interface Env {
   VAPID_PRIVATE_JWK: string
   VAPID_SUBJECT: string
   ALLOWED_ORIGINS: string
+  ADMIN_TOKEN?: string
+  DISCORD_WEBHOOK_URL?: string
+  DISCORD_TZ?: string
 }
 
 interface PushSubscriptionJson {
@@ -25,10 +33,14 @@ interface SubRecord {
   endpoint: string
   tz: string
   doneDate?: string
+  app?: string
 }
 
 const REMINDER_START_HOUR = 18
 const REMINDER_END_HOUR = 22
+const DISCORD_CHECK_HOUR = 22
+const DISCORD_DEFAULT_TZ = 'Asia/Seoul'
+const DAY_RECORD_TTL = 3 * 24 * 60 * 60
 
 // Only well-known push services are allowed so the worker can't be used to POST to arbitrary hosts.
 const PUSH_HOST_SUFFIXES = ['fcm.googleapis.com', 'push.services.mozilla.com', 'push.apple.com', 'notify.windows.com']
@@ -118,7 +130,7 @@ function corsHeaders(request: Request, env: Env): Record<string, string> {
   return {
     'Access-Control-Allow-Origin': allowed.includes(origin) ? origin : allowed[0],
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     Vary: 'Origin',
   }
 }
@@ -146,6 +158,7 @@ async function handleSubscribe(request: Request, env: Env, body: Record<string, 
     return json(request, env, { error: 'invalid subscription' }, 400)
   }
   const record: SubRecord = { endpoint, tz: body.tz }
+  if (typeof body.app === 'string' && /^[\w-]{1,32}$/.test(body.app)) record.app = body.app
   if (body.done === true && isDateKey(body.date)) record.doneDate = body.date
   await env.SUBS.put(await subKey(endpoint), JSON.stringify(record))
   return json(request, env, { ok: true })
@@ -173,6 +186,66 @@ async function handleUnsubscribe(request: Request, env: Env, body: Record<string
   if (typeof body.endpoint !== 'string') return json(request, env, { error: 'invalid endpoint' }, 400)
   await env.SUBS.delete(await subKey(body.endpoint))
   return json(request, env, { ok: true })
+}
+
+/** Manual test: pushes immediately to every device registered by `app` (default: legacy records without an app). */
+async function handleTest(request: Request, env: Env, body: Record<string, unknown>): Promise<Response> {
+  const auth = request.headers.get('Authorization') ?? ''
+  if (!env.ADMIN_TOKEN || auth !== `Bearer ${env.ADMIN_TOKEN}`) return json(request, env, { error: 'unauthorized' }, 401)
+  const app = typeof body.app === 'string' ? body.app : undefined
+
+  const results: Record<string, number> = {}
+  let cursor: string | undefined
+  do {
+    const page = await env.SUBS.list({ prefix: 'sub:', cursor })
+    for (const { name } of page.keys) {
+      const raw = await env.SUBS.get(name)
+      if (!raw) continue
+      const record = JSON.parse(raw) as SubRecord
+      if (record.app !== app) continue
+      const status = await sendPush(env, record.endpoint)
+      if (status === 404 || status === 410) await env.SUBS.delete(name)
+      results[name.slice(0, 12)] = status
+    }
+    cursor = page.list_complete ? undefined : page.cursor
+  } while (cursor)
+  return json(request, env, { sent: results })
+}
+
+async function postDiscord(env: Env, content: string): Promise<void> {
+  if (!env.DISCORD_WEBHOOK_URL) return
+  const response = await fetch(env.DISCORD_WEBHOOK_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content }),
+  })
+  if (!response.ok) console.warn(`discord post failed (${response.status})`)
+}
+
+/** Posts "done" to Discord once per day; repeated reports for the same date are ignored. */
+async function handleComplete(request: Request, env: Env, body: Record<string, unknown>): Promise<Response> {
+  const date = body.date
+  if (!isDateKey(date)) return json(request, env, { error: 'invalid date' }, 400)
+
+  // Only accept today (in the Discord timezone) +/- 1 day so the endpoint can't be used to spam arbitrary dates.
+  const now = new Date()
+  const tz = env.DISCORD_TZ ?? DISCORD_DEFAULT_TZ
+  const accepted = [-1, 0, 1].map((d) => localDateAndHour(tz, new Date(now.getTime() + d * 24 * 60 * 60 * 1000)).date)
+  if (!accepted.includes(date)) return json(request, env, { error: 'date out of range' }, 400)
+
+  const key = `done:${date}`
+  if (await env.SUBS.get(key)) return json(request, env, { ok: true, duplicate: true })
+  await env.SUBS.put(key, '1', { expirationTtl: DAY_RECORD_TTL })
+  await postDiscord(env, `✅ ${date} 오늘 운동 완료!`)
+  return json(request, env, { ok: true })
+}
+
+/** At DISCORD_CHECK_HOUR local time, posts a "not done" message if no completion was reported today. */
+async function checkDailyCompletion(env: Env, now: Date): Promise<void> {
+  const { date, hour } = localDateAndHour(env.DISCORD_TZ ?? DISCORD_DEFAULT_TZ, now)
+  if (hour !== DISCORD_CHECK_HOUR) return
+  if (await env.SUBS.get(`done:${date}`)) return
+  await postDiscord(env, `❌ ${date} 밤 ${DISCORD_CHECK_HOUR - 12}시까지 운동 기록이 없어요.`)
 }
 
 async function sendDueReminders(env: Env, now: Date): Promise<void> {
@@ -212,12 +285,17 @@ export default {
         return handleStatus(request, env, body)
       case '/unsubscribe':
         return handleUnsubscribe(request, env, body)
+      case '/complete':
+        return handleComplete(request, env, body)
+      case '/test':
+        return handleTest(request, env, body)
       default:
         return json(request, env, { error: 'not found' }, 404)
     }
   },
 
   async scheduled(controller: ScheduledController, env: Env): Promise<void> {
-    await sendDueReminders(env, new Date(controller.scheduledTime))
+    const now = new Date(controller.scheduledTime)
+    await Promise.all([sendDueReminders(env, now), checkDailyCompletion(env, now)])
   },
 } satisfies ExportedHandler<Env>
