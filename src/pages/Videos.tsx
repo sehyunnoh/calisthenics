@@ -1,4 +1,4 @@
-import { useState, type SubmitEvent } from 'react'
+import { useEffect, useState, type SubmitEvent } from 'react'
 import { useLocale } from '../i18n/locale'
 import { UI } from '../i18n/ui'
 import {
@@ -11,6 +11,17 @@ import {
   savedVideoWatchUrl,
   type SavedVideo,
 } from '../lib/savedVideos'
+import {
+  formatSyncCode,
+  generateSyncCode,
+  getSyncCode,
+  isSyncAvailable,
+  normalizeSyncCode,
+  pushAddedVideo,
+  pushRemovedVideo,
+  setSyncCode,
+  syncVideos,
+} from '../lib/videoSync'
 
 export default function Videos() {
   const { t } = useLocale()
@@ -19,6 +30,43 @@ export default function Videos() {
   const [title, setTitle] = useState('')
   const [message, setMessage] = useState<string | null>(null)
   const [playing, setPlaying] = useState<SavedVideo | null>(null)
+  const [syncCode, setSyncCodeState] = useState(() => getSyncCode())
+  const [codeInput, setCodeInput] = useState('')
+  const [syncError, setSyncError] = useState<'failed' | 'invalidCode' | null>(null)
+
+  useEffect(() => {
+    if (!syncCode) return
+    syncVideos(syncCode)
+      .then((synced) => {
+        setVideos(synced)
+        setSyncError(null)
+      })
+      .catch(() => setSyncError('failed'))
+  }, [syncCode])
+
+  function reportSyncFailure() {
+    setSyncError('failed')
+  }
+
+  function enableSync(code: string) {
+    setSyncCode(code)
+    setSyncCodeState(code)
+    setCodeInput('')
+    setSyncError(null)
+  }
+
+  function handleConnect(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const code = normalizeSyncCode(codeInput)
+    if (code) enableSync(code)
+    else setSyncError('invalidCode')
+  }
+
+  function handleSyncOff() {
+    setSyncCode(null)
+    setSyncCodeState(null)
+    setSyncError(null)
+  }
 
   function handleAdd(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -31,14 +79,18 @@ export default function Videos() {
       setMessage(t(UI.videos.duplicate))
       return
     }
-    setVideos(addSavedVideo({ ...parsed, title: title.trim() || t(UI.videos.untitled), addedAt: Date.now() }))
+    const video: SavedVideo = { ...parsed, title: title.trim() || t(UI.videos.untitled), addedAt: Date.now() }
+    setVideos(addSavedVideo(video))
+    if (syncCode) pushAddedVideo(syncCode, video).catch(reportSyncFailure)
     setLink('')
     setTitle('')
     setMessage(null)
   }
 
   function handleRemove(video: SavedVideo) {
-    if (window.confirm(t(UI.videos.confirmRemove))) setVideos(removeSavedVideo(video.videoId))
+    if (!window.confirm(t(UI.videos.confirmRemove))) return
+    setVideos(removeSavedVideo(video.videoId))
+    if (syncCode) pushRemovedVideo(syncCode, video.videoId).catch(reportSyncFailure)
   }
 
   return (
@@ -86,6 +138,48 @@ export default function Videos() {
         </ul>
       )}
       <p className="settings-note">{t(UI.videos.note)}</p>
+
+      {isSyncAvailable && (
+        <section className="video-sync">
+          <h2 className="video-sync-title">{t(UI.videos.syncTitle)}</h2>
+          {syncCode ? (
+            <>
+              <p className="video-sync-code">{formatSyncCode(syncCode)}</p>
+              <p className="reminder-hint">
+                {t(UI.videos.syncActive)} {t(UI.videos.syncWarning)}
+              </p>
+              <button className="reminder-toggle" onClick={handleSyncOff}>
+                {t(UI.videos.syncOff)}
+              </button>
+            </>
+          ) : (
+            <>
+              <button className="reminder-toggle" onClick={() => enableSync(generateSyncCode())}>
+                {t(UI.videos.syncCreate)}
+              </button>
+              <form className="video-form" onSubmit={handleConnect}>
+                <input
+                  type="text"
+                  placeholder={t(UI.videos.syncCodePlaceholder)}
+                  value={codeInput}
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  onChange={(e) => setCodeInput(e.target.value)}
+                />
+                <button type="submit" className="primary-button">
+                  {t(UI.videos.syncConnect)}
+                </button>
+              </form>
+            </>
+          )}
+          {syncError && (
+            <p className="video-form-message">
+              {t(syncError === 'failed' ? UI.videos.syncFailed : UI.videos.syncInvalidCode)}
+            </p>
+          )}
+        </section>
+      )}
 
       {playing && (
         <div className="modal-backdrop" onClick={() => setPlaying(null)}>

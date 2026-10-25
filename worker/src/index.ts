@@ -5,6 +5,7 @@
  * - POST /status      { endpoint, date, done }            record that a day was completed / un-completed
  * - POST /unsubscribe { endpoint }                        remove a device
  * - POST /complete   { date }                            post "workout done" to Discord (once per day)
+ * - POST /videos/list|add|remove { code, ... }       saved YouTube videos shared between devices by sync code
  * - POST /test       { app? }  (Bearer ADMIN_TOKEN)      push right now to every device of `app`, ignoring time window / completion
  *
  * A cron runs every hour. For each device whose local time is 18:00-21:59 and whose
@@ -41,6 +42,7 @@ const REMINDER_END_HOUR = 22
 const DISCORD_CHECK_HOUR = 22
 const DISCORD_DEFAULT_TZ = 'Asia/Seoul'
 const DAY_RECORD_TTL = 3 * 24 * 60 * 60
+const MAX_SAVED_VIDEOS = 200
 
 // Only well-known push services are allowed so the worker can't be used to POST to arbitrary hosts.
 const PUSH_HOST_SUFFIXES = ['fcm.googleapis.com', 'push.services.mozilla.com', 'push.apple.com', 'notify.windows.com']
@@ -212,6 +214,51 @@ async function handleTest(request: Request, env: Env, body: Record<string, unkno
   return json(request, env, { sent: results })
 }
 
+interface SavedVideo {
+  videoId: string
+  title: string
+  start: number
+  addedAt: number
+}
+
+/** The sync code is the only credential for a video list, so it must be long enough to be unguessable. */
+function isSyncCode(value: unknown): value is string {
+  return typeof value === 'string' && /^[a-z0-9]{12}$/.test(value)
+}
+
+function parseSavedVideo(value: unknown): SavedVideo | null {
+  if (!value || typeof value !== 'object') return null
+  const { videoId, title, start, addedAt } = value as Record<string, unknown>
+  if (typeof videoId !== 'string' || !/^[\w-]{6,20}$/.test(videoId)) return null
+  if (typeof title !== 'string' || title.length > 80) return null
+  if (typeof start !== 'number' || !Number.isInteger(start) || start < 0) return null
+  if (typeof addedAt !== 'number' || !Number.isFinite(addedAt)) return null
+  return { videoId, title, start, addedAt }
+}
+
+async function handleVideos(request: Request, env: Env, body: Record<string, unknown>, action: string): Promise<Response> {
+  if (!isSyncCode(body.code)) return json(request, env, { error: 'invalid code' }, 400)
+  const key = `videos:${(await subKey(body.code)).slice('sub:'.length)}`
+  const list = ((await env.SUBS.get(key, 'json')) as SavedVideo[] | null) ?? []
+
+  if (action === 'list') return json(request, env, { videos: list })
+
+  let next = list
+  if (action === 'add') {
+    const video = parseSavedVideo(body.video)
+    if (!video) return json(request, env, { error: 'invalid video' }, 400)
+    if (!list.some((v) => v.videoId === video.videoId)) {
+      if (list.length >= MAX_SAVED_VIDEOS) return json(request, env, { error: 'list full' }, 400)
+      next = [video, ...list].sort((a, b) => b.addedAt - a.addedAt)
+    }
+  } else {
+    if (typeof body.videoId !== 'string') return json(request, env, { error: 'invalid videoId' }, 400)
+    next = list.filter((v) => v.videoId !== body.videoId)
+  }
+  if (next !== list) await env.SUBS.put(key, JSON.stringify(next))
+  return json(request, env, { videos: next })
+}
+
 async function postDiscord(env: Env, content: string): Promise<void> {
   if (!env.DISCORD_WEBHOOK_URL) return
   const response = await fetch(env.DISCORD_WEBHOOK_URL, {
@@ -287,6 +334,12 @@ export default {
         return handleUnsubscribe(request, env, body)
       case '/complete':
         return handleComplete(request, env, body)
+      case '/videos/list':
+        return handleVideos(request, env, body, 'list')
+      case '/videos/add':
+        return handleVideos(request, env, body, 'add')
+      case '/videos/remove':
+        return handleVideos(request, env, body, 'remove')
       case '/test':
         return handleTest(request, env, body)
       default:

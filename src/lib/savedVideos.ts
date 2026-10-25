@@ -60,7 +60,7 @@ export function getSavedVideos(): SavedVideo[] {
   }
 }
 
-function writeSavedVideos(videos: SavedVideo[]): void {
+export function writeSavedVideos(videos: SavedVideo[]): void {
   try {
     localStorage.setItem(SAVED_VIDEOS_KEY, JSON.stringify(videos))
   } catch {

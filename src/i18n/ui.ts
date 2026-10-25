@@ -90,8 +90,29 @@ export const UI = {
     confirmRemove: { ko: '이 영상을 목록에서 삭제할까요?', en: 'Remove this video from your list?' } as LocalizedText,
     remove: { ko: '삭제', en: 'Remove' } as LocalizedText,
     note: {
-      ko: '저장한 영상은 이 기기의 브라우저에만 저장돼요.',
-      en: "Saved videos are stored only in this device's browser.",
+      ko: '동기화를 켜지 않으면 저장한 영상은 이 기기의 브라우저에만 저장돼요.',
+      en: "Without sync, saved videos are stored only in this device's browser.",
+    } as LocalizedText,
+    syncTitle: { ko: '기기 간 동기화', en: 'Sync across devices' } as LocalizedText,
+    syncCreate: { ko: '새 동기화 코드 만들기', en: 'Create a sync code' } as LocalizedText,
+    syncCodePlaceholder: { ko: '다른 기기의 코드 입력', en: 'Enter a code from another device' } as LocalizedText,
+    syncConnect: { ko: '연결', en: 'Connect' } as LocalizedText,
+    syncInvalidCode: {
+      ko: '코드 형식이 올바르지 않아요. (영문/숫자 12자)',
+      en: 'Invalid code (12 letters/digits).',
+    } as LocalizedText,
+    syncActive: {
+      ko: '이 코드를 다른 기기에서 입력하면 같은 목록이 보여요.',
+      en: 'Enter this code on another device to see the same list.',
+    } as LocalizedText,
+    syncWarning: {
+      ko: '코드를 아는 사람은 누구나 이 목록을 볼 수 있어요.',
+      en: 'Anyone with this code can see and edit this list.',
+    } as LocalizedText,
+    syncOff: { ko: '동기화 끄기', en: 'Turn off sync' } as LocalizedText,
+    syncFailed: {
+      ko: '동기화하지 못했어요. 네트워크를 확인해 주세요.',
+      en: "Couldn't sync. Check your connection.",
     } as LocalizedText,
   },
   encyclopedia: {
